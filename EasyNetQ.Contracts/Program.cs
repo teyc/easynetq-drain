@@ -23,14 +23,31 @@ namespace EasyNetQ.Contracts
                 var subscription = bus.PubSub.Subscribe<T>("", handler.Handle,
                     config => { config.WithPrefetchCount(2); });
 
-                Console.CancelKeyPress += (sender, eventArgs) => { };
-                AppDomain.CurrentDomain.DomainUnload += (sender, eventArgs) =>
-                {
-                    subscription.ConsumerCancellation.Dispose();
-                };
+                AddShutdownHandler(subscription, countdownEvent);
 
                 Console.ReadLine();
+                Console.WriteLine("Program terminating...");
             }
+        }
+
+        private static void AddShutdownHandler(ISubscriptionResult subscription, CountdownEvent countdownEvent)
+        {
+            Console.CancelKeyPress += (sender, eventArgs) =>
+            {
+                Log.Warning("Ctrl+C pressed. Ignored.");
+                eventArgs.Cancel = true;
+            };
+            AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) =>
+            {
+                Log.Warning("ProcessExit");
+            };
+            AppDomain.CurrentDomain.DomainUnload += (sender, eventArgs) =>
+            {
+                Log.Warning("DomainUnload");
+                subscription.ConsumerCancellation.Dispose();
+                countdownEvent.Signal();
+                while (!countdownEvent.IsSet) countdownEvent.Wait();
+            };
         }
     }
 }
