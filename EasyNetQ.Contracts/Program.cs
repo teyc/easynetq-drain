@@ -49,33 +49,48 @@ namespace EasyNetQ.Contracts
 
                 AddShutdownHandler(subscription, countdownEvent);
 
-                Console.ReadLine();
-                Console.WriteLine("Program terminating...");
+                countdownEvent.Wait();
+                
                 Log.CloseAndFlush();
             }
         }
 
+        static bool _isShutdownTriggered = false;
+        
         private static void AddShutdownHandler(ISubscriptionResult subscription, CountdownEvent countdownEvent)
         {
             Console.CancelKeyPress += (sender, eventArgs) =>
             {
+                if (countdownEvent.IsSet)
+                {                
+                    Log.Warning("Ctrl+C pressed. Proceed.");
+                    return;
+                }
+                
                 Log.Warning("Ctrl+C pressed. Ignored.");
                 eventArgs.Cancel = true;
-            };
-            AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnDomainUnload(subscription, countdownEvent, "ProcessExit");
-            AppDomain.CurrentDomain.DomainUnload += CurrentDomainOnDomainUnload(subscription, countdownEvent, "DomainUnload");
-        }
 
-        private static EventHandler CurrentDomainOnDomainUnload(ISubscriptionResult subscription, CountdownEvent countdownEvent, string eventName)
-        {
-            return (sender, eventArgs) =>
-            {
-                Log.Warning(eventName);
+                if (_isShutdownTriggered) return;
+                
+                _isShutdownTriggered = true;
                 subscription.ConsumerCancellation.Dispose();
                 countdownEvent.Signal();
-                while (!countdownEvent.IsSet) countdownEvent.Wait();
-                Thread.Sleep(2000);
+                Log.Warning("Sent shutdown signal.");
+                new Thread(() => WaitForShutDown(countdownEvent)).Start();
             };
+
+            
+        }
+        
+        private static void WaitForShutDown(CountdownEvent countdownEvent)
+        {
+            while (!countdownEvent.IsSet)
+            {
+                Log.Information("Count Down {Counter}", countdownEvent.CurrentCount);
+                countdownEvent.Wait();
+            }
+            Thread.Sleep(2000);
+            Log.Information("Shut down.");
         }
     }
 }
