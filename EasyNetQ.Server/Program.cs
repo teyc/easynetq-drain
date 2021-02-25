@@ -13,7 +13,7 @@ namespace EasyNetQ.Server
             
             var connectionConfiguration = new ConnectionConfiguration
             {
-                Hosts = {new HostConfiguration {Host = "localhost", Port = 10089}}
+                Hosts = {new HostConfiguration {Host = "localhost", Port = 5672}}
             };
 
             var instance = args.SingleOrDefault() ?? "DefaultInstance";
@@ -23,6 +23,8 @@ namespace EasyNetQ.Server
                 var handler = new BeginDelegationCommandHandler(instance, bus);
                 var subscription = bus.PubSub.Subscribe<BeginDelegationCommand>(instance, handler.Handle,
                     config => { config.WithPrefetchCount(2); });
+
+                Console.ReadLine();
             }
         }
 

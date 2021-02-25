@@ -1,5 +1,9 @@
-﻿using System.Threading;
+﻿using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using EasyNetQ.Contracts;
+using EasyNetQ.Internals;
 
 namespace EasyNetQ.Client
 {
@@ -7,6 +11,7 @@ namespace EasyNetQ.Client
     {
         private IBus _bus;
         private string _instance;
+        private static ConcurrentBag<int> _delegationIds = new ConcurrentBag<int>();
 
         public ResumeDelegationCommandHandler(string instance, IBus bus)
         {
@@ -14,9 +19,10 @@ namespace EasyNetQ.Client
             _instance = instance;
         }
 
-        public void Handle(ResumeDelegationCommand command)
+        public async Task Handle(ResumeDelegationCommand command, CancellationToken cancellationToken)
         {
-            Log.Information($"Received {command.Instance} {command.DelegationId}");
+            _delegationIds.Add(command.DelegationId);
+            Log.Information($"Received {command.Instance} {command.DelegationId} totalReceived={_delegationIds.Count()}");
         }
     }
 }

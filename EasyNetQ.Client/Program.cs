@@ -11,7 +11,7 @@ namespace EasyNetQ.Client
             
             var connectionConfiguration = new ConnectionConfiguration
             {
-                Hosts = {new HostConfiguration {Host = "localhost", Port = 10089}}
+                Hosts = {new HostConfiguration {Host = "localhost", Port = 5672}}
             };
 
             var instance = args.SingleOrDefault() ?? "DefaultInstance";
@@ -19,10 +19,10 @@ namespace EasyNetQ.Client
             using (var bus = RabbitHutch.CreateBus(connectionConfiguration, _ => { }))
             {
                 var handler = new ResumeDelegationCommandHandler(instance, bus);
-                var subscription = bus.PubSub.Subscribe<ResumeDelegationCommand>(instance, handler.Handle,
+                var subscription = bus.PubSub.SubscribeAsync<ResumeDelegationCommand>(instance, handler.Handle,
                     config => { config.WithPrefetchCount(2); });
 
-                var dispatcher = new BeginDelegationCommandDispatcher(bus, 50);
+                var dispatcher = new BeginDelegationCommandDispatcher(bus, 20);
                 dispatcher.Start();
                 
                 Console.ReadLine();

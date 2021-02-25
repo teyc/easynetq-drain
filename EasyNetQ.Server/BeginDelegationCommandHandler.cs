@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using EasyNetQ.Contracts;
 
 namespace EasyNetQ.Server
@@ -14,10 +15,12 @@ namespace EasyNetQ.Server
             _instance = instance;
         }
 
-        public void Handle(BeginDelegationCommand command)
+        public async Task Handle(BeginDelegationCommand command, CancellationToken cancellationToken)
         {
-            Thread.Sleep(4000);
-            _bus.PubSub.Publish(new ResumeDelegationCommand() { DelegationId = command.DelegationId, Instance = _instance});
+            Log.Information($"Received BeginDelegationCommand DelegationId={command.DelegationId}");
+            await Task.Delay(1000);
+            await _bus.PubSub.PublishAsync(new ResumeDelegationCommand() { DelegationId = command.DelegationId, Instance = _instance});
+            Log.Information($"Sent ResumeDelegationCommand DelegationId={command.DelegationId}");
         }
     }
 }
