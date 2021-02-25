@@ -21,6 +21,7 @@ namespace EasyNetQ.Client
 
         public async Task Handle(ResumeDelegationCommand command, CancellationToken cancellationToken)
         {
+            await Task.Delay(50);
             _delegationIds.Add(command.DelegationId);
             Log.Information($"Received {command.Instance} {command.DelegationId} totalReceived={_delegationIds.Count()}");
         }

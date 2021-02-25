@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using EasyNetQ.Contracts;
+using Serilog;
+using Log = Serilog.Log;
 
 namespace EasyNetQ.Client
 {
@@ -8,6 +10,10 @@ namespace EasyNetQ.Client
     {
         public static void Main(string[] args)
         {
+
+            Log.Logger = new LoggerConfiguration().WriteTo.Console().
+                MinimumLevel.Information().
+                CreateLogger();
             
             var connectionConfiguration = new ConnectionConfiguration
             {
@@ -19,7 +25,7 @@ namespace EasyNetQ.Client
             using (var bus = RabbitHutch.CreateBus(connectionConfiguration, _ => { }))
             {
                 var handler = new ResumeDelegationCommandHandler(instance, bus);
-                var subscription = bus.PubSub.SubscribeAsync<ResumeDelegationCommand>(instance, handler.Handle,
+                var subscription = bus.PubSub.SubscribeAsync<ResumeDelegationCommand>("", handler.Handle,
                     config => { config.WithPrefetchCount(2); });
 
                 var dispatcher = new BeginDelegationCommandDispatcher(bus, 20);
