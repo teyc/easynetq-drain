@@ -10,7 +10,7 @@ namespace EasyNetQ.Contracts
     {
         public static void Main<T>(string[] args, Func<string, IBus, IHandle<T>> handlerFactory)
         {
-            Log.Logger = new LoggerConfiguration().WriteTo.Console().MinimumLevel.Information().CreateLogger();
+            Log.Logger = new LoggerConfiguration().WriteTo.Console().MinimumLevel.Debug().CreateLogger();
             
             var countdownEvent = new CountdownEvent(1);
             
@@ -51,6 +51,7 @@ namespace EasyNetQ.Contracts
 
                 Console.ReadLine();
                 Console.WriteLine("Program terminating...");
+                Log.CloseAndFlush();
             }
         }
 
@@ -61,16 +62,19 @@ namespace EasyNetQ.Contracts
                 Log.Warning("Ctrl+C pressed. Ignored.");
                 eventArgs.Cancel = true;
             };
-            AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) =>
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnDomainUnload(subscription, countdownEvent, "ProcessExit");
+            AppDomain.CurrentDomain.DomainUnload += CurrentDomainOnDomainUnload(subscription, countdownEvent, "DomainUnload");
+        }
+
+        private static EventHandler CurrentDomainOnDomainUnload(ISubscriptionResult subscription, CountdownEvent countdownEvent, string eventName)
+        {
+            return (sender, eventArgs) =>
             {
-                Log.Warning("ProcessExit");
-            };
-            AppDomain.CurrentDomain.DomainUnload += (sender, eventArgs) =>
-            {
-                Log.Warning("DomainUnload");
+                Log.Warning(eventName);
                 subscription.ConsumerCancellation.Dispose();
                 countdownEvent.Signal();
                 while (!countdownEvent.IsSet) countdownEvent.Wait();
+                Thread.Sleep(2000);
             };
         }
     }
