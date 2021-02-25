@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyNetQ.Server", "EasyNetQ.Server\EasyNetQ.Server.csproj", "{026E49B8-DBBC-47A6-9FB3-BCF778B2377D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyNetQ.Client", "EasyNetQ.Client\EasyNetQ.Client.csproj", "{9C32657E-0068-47C7-ABD5-79679EA8CECB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyNetQ.Contracts", "EasyNetQ.Contracts\EasyNetQ.Contracts.csproj", "{488499C9-71BD-47C6-ACA1-C87D915A7506}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{026E49B8-DBBC-47A6-9FB3-BCF778B2377D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{026E49B8-DBBC-47A6-9FB3-BCF778B2377D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{026E49B8-DBBC-47A6-9FB3-BCF778B2377D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{026E49B8-DBBC-47A6-9FB3-BCF778B2377D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C32657E-0068-47C7-ABD5-79679EA8CECB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C32657E-0068-47C7-ABD5-79679EA8CECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C32657E-0068-47C7-ABD5-79679EA8CECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C32657E-0068-47C7-ABD5-79679EA8CECB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{488499C9-71BD-47C6-ACA1-C87D915A7506}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{488499C9-71BD-47C6-ACA1-C87D915A7506}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{488499C9-71BD-47C6-ACA1-C87D915A7506}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{488499C9-71BD-47C6-ACA1-C87D915A7506}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
