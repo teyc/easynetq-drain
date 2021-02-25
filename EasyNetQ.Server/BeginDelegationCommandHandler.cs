@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ.Contracts;
+using Serilog;
 
 namespace EasyNetQ.Server
 {
