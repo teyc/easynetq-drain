@@ -16,15 +16,12 @@ namespace EasyNetQ.Client
 
         public void Start()
         {
-            new Thread(new ParameterizedThreadStart(Dispatch)).Start(_n);
+            new Thread(Dispatch).Start(_n);
         }
-        
-        void Dispatch(object n)
+
+        private void Dispatch(object n)
         {
-            for (int i = 0; i < (int) n; i++)
-            {
-                _bus.PubSub.PublishAsync(new BeginDelegationCommand {DelegationId = i});
-            }
+            for (var i = 0; i < (int) n; i++) _bus.PubSub.PublishAsync(new BeginDelegationCommand {DelegationId = i});
         }
     }
 }

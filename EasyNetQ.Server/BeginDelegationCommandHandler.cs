@@ -4,10 +4,10 @@ using EasyNetQ.Contracts;
 
 namespace EasyNetQ.Server
 {
-    public class BeginDelegationCommandHandler
+    public class BeginDelegationCommandHandler : IHandle<BeginDelegationCommand>
     {
-        private IBus _bus;
-        private string _instance;
+        private readonly IBus _bus;
+        private readonly string _instance;
 
         public BeginDelegationCommandHandler(string instance, IBus bus)
         {
@@ -19,7 +19,8 @@ namespace EasyNetQ.Server
         {
             Log.Information($"Received BeginDelegationCommand DelegationId={command.DelegationId}");
             await Task.Delay(1000);
-            await _bus.PubSub.PublishAsync(new ResumeDelegationCommand() { DelegationId = command.DelegationId, Instance = _instance});
+            await _bus.PubSub.PublishAsync(new ResumeDelegationCommand
+                {DelegationId = command.DelegationId, Instance = _instance});
             Log.Information($"Sent ResumeDelegationCommand DelegationId={command.DelegationId}");
         }
     }

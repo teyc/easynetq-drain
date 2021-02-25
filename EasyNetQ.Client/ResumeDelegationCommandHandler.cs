@@ -3,15 +3,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ.Contracts;
-using EasyNetQ.Internals;
 
 namespace EasyNetQ.Client
 {
-    public class ResumeDelegationCommandHandler
+    public class ResumeDelegationCommandHandler : IHandle<ResumeDelegationCommand>
     {
+        private static readonly ConcurrentBag<int> _delegationIds = new ConcurrentBag<int>();
         private IBus _bus;
         private string _instance;
-        private static ConcurrentBag<int> _delegationIds = new ConcurrentBag<int>();
 
         public ResumeDelegationCommandHandler(string instance, IBus bus)
         {
@@ -23,7 +22,8 @@ namespace EasyNetQ.Client
         {
             await Task.Delay(50);
             _delegationIds.Add(command.DelegationId);
-            Log.Information($"Received {command.Instance} {command.DelegationId} totalReceived={_delegationIds.Count()}");
+            Log.Information(
+                $"Received {command.Instance} {command.DelegationId} totalReceived={_delegationIds.Count()}");
         }
     }
 }
